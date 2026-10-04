@@ -1,0 +1,41 @@
+databases:
+  - name: claimer-swapper-db
+    databaseName: storefront
+    user: storefront
+    plan: basic-256mb
+    region: oregon
+    postgresMajorVersion: "16"
+
+services:
+  - type: worker
+    name: claimer-swapper-bot
+    runtime: python
+    plan: starter
+    region: oregon
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m bot.main
+    autoDeploy: true
+    maxShutdownDelaySeconds: 60
+    envVars:
+      - key: BOT_TOKEN
+        sync: false
+      - key: ADMIN_IDS
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: claimer-swapper-db
+          property: connectionString
+      - key: MANUAL_PAYMENT_APPROVAL
+        value: "true"
+      - key: SOL_ADDRESS
+        sync: false
+      - key: ETH_ADDRESS
+        sync: false
+      - key: BTC_ADDRESS
+        sync: false
+      - key: LTC_ADDRESS
+        sync: false
+      - key: SUPPORT_USERNAME
+        sync: false
+      - key: ORDER_EXPIRY_MINUTES
+        value: "30"
